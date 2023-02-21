@@ -13,10 +13,11 @@ const loadMoreBtn = document.querySelector(".load-more");
 
 let page = 1;
 let per_page = 42;
-let notificar = true;
+
 
 
 async function consulta(url,verb){
+
   try {
   const response = await  axios({
         method: verb,
@@ -31,7 +32,7 @@ async function consulta(url,verb){
         else{
           loadMoreBtn.style.display = "block";
             console.log(response);
-            if(notificar){
+            if(page === 1){
             Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
             }
             const markup =  response.data.hits.map(e => {
@@ -85,6 +86,7 @@ async function consulta(url,verb){
 
             const lightbox = new SimpleLightbox(".card-link");
         lightbox.refresh();
+        
             }
           }
     catch (error) {
@@ -102,11 +104,20 @@ form.addEventListener("submit" , (event) => {
 });
 
 loadMoreBtn.addEventListener("click" , () =>{
-  notificar =false;
+  
   page += 1;
   let input = document.querySelector('[name="searchQuery"]').value;
   let urlencoded = encodeURIComponent(input);
   let ruta = `https://pixabay.com/api/?key=33770960-9441e00aea4c2d2fce88c05cc&q=${urlencoded}&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=${per_page}`;
   consulta(ruta,"GET");
+  
+  const { height= "4" } = document
+  .querySelector(".gallery")
+  .firstElementChild.getBoundingClientRect();
+
+window.scrollTo({
+  top: height * 2,
+  behavior: "smooth",
+});
 });
 
